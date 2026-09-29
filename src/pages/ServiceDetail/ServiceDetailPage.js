@@ -55,7 +55,27 @@ const ServiceDetailPage = () => {
       />
       <StructuredData data={buildServiceSchema(service)} />
 
-      <div className="relative z-0 overflow-x-hidden bg-white pt-4 text-gray-900 dark:bg-surface-dark dark:text-gray-100">
+      {/*
+        Keyed by slug so a related-service click builds a completely fresh set
+        of motion components.
+
+        Without the key, React reuses the same `motion.*` instances when only the
+        `:slug` param changes, and each one carries a `whileInView` observer
+        latched by `inViewOnce.once`. framer-motion evaluates that observer once
+        on mount, and `ScrollToTop` jumps to the top in an effect that runs after
+        the paint — so on the incoming page the sections were still below the
+        fold at evaluation time, latched to the `hidden` variant, and `once`
+        guaranteed they would never re-check. Key Benefits and the gallery were
+        left at `opacity: 0` on every related-service transition (3 of 3
+        reproduced), with every image fully downloaded but invisible.
+
+        Remounting resets the observer, so the reveal runs against the new
+        page's real layout after the scroll reset.
+      */}
+      <div
+        key={service.id}
+        className="relative z-0 overflow-x-hidden bg-white pt-4 text-gray-900 dark:bg-surface-dark dark:text-gray-100"
+      >
         <DecorativeBlobs />
 
         <div className="relative z-10 flex flex-col items-center px-4 pb-10 pt-24 sm:px-6">

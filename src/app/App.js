@@ -24,13 +24,33 @@ const App = () => (
 
     <Header />
 
-    <main id="main-content" className="flex-1" tabIndex={-1}>
-      <Suspense fallback={<Loader className="min-h-[60vh]" />}>
-        <Outlet />
-      </Suspense>
-    </main>
+    {/*
+      The `<main>`, the footer and the outlet all share one Suspense boundary,
+      and the footer is deliberately inside it.
 
-    <Footer />
+      The footer used to sit outside, so it painted immediately beside the
+      loading fallback — measured at document height 720px with the footer at
+      y=604 — and was then pushed down to y=4098/6188 the moment the lazy route
+      chunk resolved. That single move was 0.161 of the 0.1618 total CLS, on
+      every route (fonts were ruled out: `document.fonts.ready` resolved at
+      4.2s, long after the shift at 1.1s).
+
+      Inside the boundary the footer simply does not exist while the page is
+      loading, so nothing can shift. The visitor sees the header and a
+      full-height loader, then the page and its footer arrive together.
+
+      `<WhatsAppButton />` stays outside: it is `position: fixed`, so it never
+      moves and contributes nothing to CLS, and it should stay available while
+      the page loads.
+    */}
+    <Suspense fallback={<Loader className="min-h-viewport" />}>
+      <main id="main-content" className="flex-1" tabIndex={-1}>
+        <Outlet />
+      </main>
+
+      <Footer />
+    </Suspense>
+
     <WhatsAppButton />
 
     <ScrollToTop />

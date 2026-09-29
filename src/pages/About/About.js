@@ -36,7 +36,24 @@ const About = () => {
       />
       <StructuredData data={buildLocalBusinessSchema()} />
 
-      <section className="relative flex min-h-viewport flex-col items-center overflow-hidden bg-white px-4 pb-10 pt-20 text-gray-900 dark:bg-surface-dark dark:text-gray-100 sm:px-6">
+      {/*
+       * Page-scoped layout for About only.
+       *
+       * `pt-header` replaces a hardcoded `pt-20` (80px). The header is
+       * `position: fixed` and measures 83px from 640px up, so 80px left the
+       * breadcrumb sitting 3px behind the translucent header at every width
+       * tested (320, 768, 1024, 1440, 2560). `pt-header` is derived from the
+       * header's real geometry, so the two cannot drift apart again.
+       *
+       * `pb-section` supplies the bottom half of the site's existing
+       * `section-y` rhythm. It is a separate utility rather than `section-y`
+       * itself because that token's *top* value (56px) is smaller than the
+       * header and would reintroduce the overlap.
+       *
+       * `min-h-viewport` is dropped: this section renders ~5,800px of content,
+       * so a viewport minimum did nothing but imply a constraint never met.
+       */}
+      <section className="relative flex flex-col items-center overflow-hidden bg-white px-4 pt-header pb-section text-gray-900 dark:bg-surface-dark dark:text-gray-100 sm:px-6">
         <DecorativeBlobs />
 
         <div className="relative z-10 w-full max-w-4xl">
@@ -66,7 +83,7 @@ const About = () => {
 
         {/* Our story */}
         <motion.div
-          className="relative z-10 mt-16 w-full max-w-3xl"
+          className="relative z-10 mt-section w-full max-w-3xl"
           initial="hidden"
           whileInView="visible"
           viewport={inViewOnce}
@@ -89,7 +106,7 @@ const About = () => {
 
         {/* Vision and mission */}
         <motion.ul
-          className="relative z-10 mt-16 grid w-full max-w-container grid-cols-1 gap-8 md:grid-cols-2"
+          className="relative z-10 mt-section grid w-full max-w-container grid-cols-1 gap-8 md:grid-cols-2"
           initial="hidden"
           whileInView="visible"
           viewport={inViewOnce}
@@ -122,7 +139,7 @@ const About = () => {
 
         {/* Timeline */}
         <motion.div
-          className="relative z-10 mt-20 w-full max-w-3xl"
+          className="relative z-10 mt-section w-full max-w-3xl"
           initial="hidden"
           whileInView="visible"
           viewport={inViewOnce}
@@ -160,7 +177,7 @@ const About = () => {
 
         {/* Values */}
         <motion.div
-          className="relative z-10 mt-20 w-full"
+          className="relative z-10 mt-section w-full"
           initial="hidden"
           whileInView="visible"
           viewport={inViewOnce}
@@ -200,7 +217,7 @@ const About = () => {
 
         {/* Why choose us */}
         <motion.div
-          className="relative z-10 mt-20 w-full"
+          className="relative z-10 mt-section w-full"
           initial="hidden"
           whileInView="visible"
           viewport={inViewOnce}
@@ -240,7 +257,7 @@ const About = () => {
 
         {/* Team */}
         <motion.div
-          className="relative z-10 mt-20 max-w-3xl px-4 text-center sm:px-6"
+          className="relative z-10 mt-section max-w-3xl px-4 text-center sm:px-6"
           initial="hidden"
           whileInView="visible"
           viewport={inViewOnce}
@@ -267,7 +284,7 @@ const About = () => {
 
         {/* Service areas */}
         <motion.div
-          className="relative z-10 mt-20 w-full max-w-3xl"
+          className="relative z-10 mt-section w-full max-w-3xl"
           initial="hidden"
           whileInView="visible"
           viewport={inViewOnce}

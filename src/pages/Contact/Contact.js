@@ -26,7 +26,10 @@ import {
  * that is a real destination rather than a stub.
  */
 const Contact = () => (
-  <section className="relative flex min-h-viewport flex-col items-center overflow-hidden bg-white px-4 pb-10 pt-20 text-gray-900 dark:bg-surface-dark dark:text-gray-100 sm:px-6">
+  // `pt-header` for the same reason as About: the hardcoded `pt-20` (80px)
+  // under-cleared the 83px fixed header at every width from 640px up, putting
+  // the breadcrumb 3px behind it. This page is the only other one affected.
+  <section className="relative flex min-h-viewport flex-col items-center overflow-hidden bg-white px-4 pb-10 pt-header text-gray-900 dark:bg-surface-dark dark:text-gray-100 sm:px-6">
     <Seo
       title={contactPage.metaTitle}
       description={contactPage.intro}

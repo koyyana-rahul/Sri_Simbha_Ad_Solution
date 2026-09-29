@@ -110,5 +110,14 @@ export const cardVariants = {
  * For a section taller than the viewport that is impossible, so tall sections
  * never animated at all; `amount: 0` plus `margin` fires as soon as any part
  * enters, which is what a reveal is supposed to mean.
+ *
+ * `once: true` is deliberate, and the reveal depends on it: without it the
+ * `hidden` variant would be restored the moment a tall section scrolled past,
+ * so a section taller than the viewport would blank out again and stay blank.
+ *
+ * The same latch is why a page that is reused across a param change must be
+ * remounted, otherwise the observer is never re-evaluated against the new
+ * layout. `ServiceDetailPage` keys its content by service id for exactly that
+ * reason.
  */
 export const inViewOnce = { once: true, amount: 0, margin: "0px 0px -10% 0px" };

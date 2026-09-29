@@ -130,8 +130,10 @@
   }
 
   .logo-container {
-    width: 50px;
-    height: 50px;
+    /* Sourced from the same token `--header-height` is derived from, so the
+       logo can never outgrow the height pages offset by. */
+    width: var(--header-logo);
+    height: var(--header-logo);
     border-radius: var(--radius-md);
     border: 2px solid var(--color-brand-500);
     background-color: #ffffff;
@@ -415,8 +417,47 @@
 
 @layer utilities {
   /*
-   * Viewport-height helpers.
+   * Header-relative offsets.
    *
+   * `--header-height` is derived from the logo box and the header's vertical
+   * padding, so these track the real header at every breakpoint instead of
+   * guessing a pixel value. Used only by the pages whose first content would
+   * otherwise sit behind the fixed header.
+   */
+  .pt-header {
+    padding-top: calc(var(--header-height) + var(--page-top-gap));
+  }
+
+  /*
+   * The bottom half of the `section-y` rhythm, exposed separately.
+   *
+   * A page whose first content must clear the fixed header needs the header
+   * offset at the top and the section rhythm at the bottom, and `section-y`'s
+   * own top value (56px) is smaller than the header — so it cannot be used
+   * as-is. Same clamp, so the two stay in step.
+   */
+  .pb-section {
+    padding-bottom: clamp(3.5rem, 2.6rem + 3.6vw, 6rem);
+  }
+
+  /*
+   * Vertical separation between the major blocks of a long, single-section
+   * page. About had `mt-16` on its first two blocks and `mt-20` on the other
+   * five — the same job at two different values, producing a visible change in
+   * rhythm partway down the page. One token, same fluid clamp as the section
+   * rhythm so a long page and a stack of sections feel like one system.
+   */
+  .mt-section {
+    margin-top: clamp(2.5rem, 2rem + 2.5vw, 4.5rem);
+  }
+
+  .py-header {
+    padding-top: var(--header-pad-y);
+    padding-bottom: var(--header-pad-y);
+  }
+
+  /*
+   * Viewport-height helpers.   *
    * `100vh` on a phone is the *largest* viewport: the height the page would
    * have with the browser chrome hidden. As the URL bar collapses on scroll the
    * real viewport gets shorter, so a `100vh` hero is taller than the screen and

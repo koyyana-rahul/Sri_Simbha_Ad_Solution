@@ -41,7 +41,11 @@ const Header = () => {
 
   return (
     <header className="site-header">
-      <div className="mx-auto flex w-full max-w-container items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
+      {/* `py-header` / `sm:py-header-lg` are utility classes in
+          `styles/globals.css` bound to the same `--header-pad-y` token that
+          `--header-height` is derived from, so the header's own height and the
+          offset pages use can never disagree. */}
+      <div className="site-header__bar mx-auto flex w-full max-w-container items-center justify-between px-4 py-header sm:px-6">
         <Link
           to="/"
           onClick={closeMenu}

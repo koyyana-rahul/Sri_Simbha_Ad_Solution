@@ -1,9 +1,15 @@
 import { lazy } from "react";
-import { createBrowserRouter, redirect } from "react-router-dom";
+import {
+  createBrowserRouter,
+  isRouteErrorResponse,
+  redirect,
+  useRouteError,
+} from "react-router-dom";
 
 import App from "./App";
 import AppProviders from "./providers";
 import RouteError from "../pages/Error/RouteError";
+import NotFoundPage from "../pages/NotFound/NotFound";
 import { getServiceByPath } from "../config/services.config";
 import {
   loadHome,
@@ -48,6 +54,34 @@ const serviceLoader = ({ params }) => {
   return null;
 };
 
+/**
+ * Error element for the service-detail route only.
+ *
+ * `errorElement` on a route replaces that route's *entire* element. The
+ * catch-all `errorElement` below sits on the parent route, which renders the
+ * app shell, so a loader throwing for an unknown service slug replaced the
+ * whole shell: measured on the built site, `/services/does-not-exist` rendered
+ * a bare "Oops!" with no header, no `<main>`, no footer, no navigation, no skip
+ * link and no contact CTA — while an unknown *top-level* route kept all of it.
+ * A mistyped or expired service URL stranded the visitor.
+ *
+ * Declaring the boundary on this child instead means the error renders where
+ * the service page would have been, inside the shell.
+ *
+ * A 404 gets the full `NotFound` screen, which already offers a breadcrumb-free
+ * explanation, a link home and the primary navigation; anything else falls
+ * through to the generic `RouteError`.
+ */
+const ServiceErrorElement = () => {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error) && error.status === 404) {
+    return <NotFoundPage />;
+  }
+
+  return <RouteError />;
+};
+
 export const appRouter = createBrowserRouter([
   {
     path: "/",
@@ -56,6 +90,9 @@ export const appRouter = createBrowserRouter([
         <App />
       </AppProviders>
     ),
+    // Last-resort boundary. Anything without a nearer one lands here and, as
+    // before, loses the shell — that is the correct trade for a genuine
+    // app-level crash, where the shell may be what failed.
     errorElement: <RouteError />,
     children: [
       { index: true, element: <Home /> },
@@ -64,6 +101,7 @@ export const appRouter = createBrowserRouter([
         path: "services/:slug",
         element: <ServiceDetail />,
         loader: serviceLoader,
+        errorElement: <ServiceErrorElement />,
       },
       /**
        * Historic alias.

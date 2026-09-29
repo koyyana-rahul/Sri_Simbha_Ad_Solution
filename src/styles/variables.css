@@ -44,9 +44,46 @@
 
   /* Layout */
   --container-max: 72rem;
-  --header-height: 4.5rem;
-  --header-height-mobile: 4rem;
 
+  /*
+   * Fixed-header geometry — the single source of truth.
+   *
+   * These were previously `--header-height: 4.5rem` and
+   * `--header-height-mobile: 4rem`, which were wrong (72px/64px against a real
+   * 83px/75px) and, worse, referenced nowhere: the header grew from its
+   * content and pages guessed at an offset with a hardcoded `pt-20` (80px).
+   * That under-cleared the 83px case by 3px, so the breadcrumb on About and
+   * Contact sat behind the translucent header at every width from 640px up.
+   *
+   * `--header-height` is now *derived from the same two values the header
+   * itself uses* (the logo box and its vertical padding), so a change to either
+   * moves the header and the page offsets together and they cannot drift apart
+   * again. Measured: 50 + 2*12 + 2 borders = 76px below 640px, and
+   * 50 + 2*16 + 2 = 84px at and above it.
+   */
+  --header-logo: 50px;
+  --header-pad-y: 12px;
+  --header-border: 1px;
+  --header-height: calc(
+    var(--header-logo) + 2 * var(--header-pad-y) + 2 * var(--header-border)
+  );
+
+  /* Breathing room between the header and the first content on a page. */
+  --page-top-gap: 1rem;
+}
+
+/*
+ * The header's vertical padding steps up at the `sm` breakpoint, so the
+ * derived height does too. Declared after the `:root` block rather than nested
+ * inside it, so this does not depend on CSS nesting support.
+ */
+@media (min-width: 640px) {
+  :root {
+    --header-pad-y: 16px;
+  }
+}
+
+:root {
   /* Z-index scale */
   --z-base: 0;
   --z-raised: 10;
