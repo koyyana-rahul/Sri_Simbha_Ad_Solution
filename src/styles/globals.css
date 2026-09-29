@@ -1,0 +1,439 @@
+@import "./variables.css";
+@import "./design-system.css";
+@import "./animations.css";
+@import "./motion.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply font-inter bg-white text-gray-900 antialiased;
+    margin: 0;
+    min-height: 100vh;
+    transition:
+      background-color var(--duration-base) ease,
+      color var(--duration-base) ease;
+  }
+
+  .dark body {
+    @apply text-gray-100;
+    background-color: var(--color-surface);
+  }
+
+  /*
+   * Theme change transition.
+   *
+   * Applied only after mount. `ThemeProvider` sets `data-theme-transition` from
+   * the second render onwards, so the very first paint — the one the inline
+   * script in `index.html` already got right — is never animated, and a
+   * visitor arriving on the correct theme sees no movement at all. Only an
+   * explicit switch is eased.
+   *
+   * Background and colour only. `transition: all` would also animate
+   * `background-image` on the wordmark, re-rasterising the gradient text, and
+   * would drag every layout-affecting property along with it.
+   */
+  [data-theme-transition] body,
+  [data-theme-transition] .site-header,
+  [data-theme-transition] .menu-list {
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-theme-transition] body,
+    [data-theme-transition] .site-header,
+    [data-theme-transition] .menu-list {
+      transition: none;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-balance;
+  }
+
+  /* One consistent, always-visible keyboard focus treatment. */
+  :focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-sm);
+  }
+
+  /* Never let decorative motion or oversized type create sideways scroll. */
+  img,
+  video,
+  svg {
+    max-width: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Components                                                          */
+/* ------------------------------------------------------------------ */
+
+@layer components {
+  /* --- Skip link (keyboard / screen-reader users) --- */
+  .skip-link {
+    @apply absolute left-4 top-4 z-[100] -translate-y-24 rounded-md bg-brand-500 px-4 py-2 font-semibold text-gray-900 transition-transform;
+  }
+
+  .skip-link:focus {
+    @apply translate-y-0;
+  }
+
+  /* --- Header --- */
+  /*
+   * NO `overflow: hidden` here.
+   *
+   * It was added once to stop the closed mobile panel extending a full viewport
+   * width to the right, and it broke the menu outright: the header is only
+   * ~75px tall while the panel hangs ~375px below it, so clipping the header
+   * clipped the panel to 5px. The button still reported `aria-expanded="true"`
+   * and the panel still computed `visibility: visible`, but `elementFromPoint`
+   * at the middle of the panel returned the hero and all five links were
+   * unclickable. The overflow is now prevented at its source instead — see
+   * `.mobile-menu`, which no longer parks itself outside the viewport.
+   */
+  .site-header {
+    @apply fixed inset-x-0 top-0 z-50 border-b shadow-lg backdrop-blur-md;
+    background-color: rgb(255 255 255 / 0.7);
+    border-color: #e5e7eb;
+  }
+
+  .dark .site-header {
+    background-color: rgb(17 24 39 / 0.8);
+    border-color: #1f2937;
+  }
+
+  .logo-container {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--color-brand-500);
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .dark .logo-container {
+    background-color: #1f2937;
+  }
+
+  .logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+  }
+
+  .animated-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    /*
+     * The gradient is defined per theme because a single ramp cannot be
+     * legible on both backgrounds. The old ramp ran brand-500 -> brand-400
+     * -> brand-300, and #f59e0b on the light header measured ~2.2:1 — below
+     * the 3:1 WCAG threshold for large text, so the wordmark was hard to read
+     * in light mode.
+     *
+     * Light: brand-800 -> brand-700 -> brand-600, roughly 7:1 / 5:1 / 3.2:1.
+     * Dark: the original bright ramp, which measures ~8.3:1 on the dark header.
+     * Both stay recognisably the brand amber.
+     *
+     * `background-image` (longhand) is used deliberately, NOT the `background`
+     * shorthand. The shorthand resets `background-clip` to its initial value,
+     * and the dark override below is written after this rule — so using the
+     * shorthand there silently wiped out `background-clip: text`, the gradient
+     * filled the whole box as a solid amber rectangle, and `color: transparent`
+     * made the glyphs invisible. The company name was unreadable in dark mode.
+     */
+    background-image: linear-gradient(90deg, #92400e, #b45309, #d97706);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* The travelling highlight is a `::after` overlay animated with
+       `transform` — see styles/motion.css. Animating `background-position`
+       here instead would repaint the glyphs on every frame. */
+  }
+
+  .dark .animated-brand {
+    background-image: linear-gradient(90deg, #f59e0b, #fbbf24, #facc15);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  @media (max-width: 480px) {
+    .animated-brand {
+      font-size: 1.2rem;
+    }
+  }
+
+  .nav-link {
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    transition:
+      color var(--duration-base) ease-in-out,
+      background-color var(--duration-base) ease-in-out,
+      transform var(--duration-base) ease-in-out;
+    color: #1f2937;
+    text-decoration: none;
+    display: inline-block;
+    /* Was measured at 20px tall, under the 24px WCAG 2.2 minimum. */
+    min-height: 2.75rem;
+    line-height: 1.5rem;
+  }
+
+  .dark .nav-link {
+    color: #e5e7eb;
+  }
+
+  .nav-link:hover {
+    color: var(--color-brand-500);
+    transform: scale(1.05);
+  }
+
+  .nav-link[aria-current="page"] {
+    color: var(--color-brand-500);
+    background-color: rgb(250 204 21 / 0.12);
+  }
+
+  @media (max-width: 360px) {
+    .nav-link {
+      font-size: 0.75rem;
+      padding: 10px 12px;
+    }
+  }
+
+  /* --- Mobile menu --- */
+  /*
+   * Root cause of the closed-panel overflow, fixed at the source.
+   *
+   * The panel used to be parked off-canvas with `transform: translateX(100%)`,
+   * which put its right edge a full viewport width past the fold — 2x the
+   * viewport at every width from 320px to 600px. Suppressing that needed
+   * `overflow: hidden` on the header, which in turn clipped the *open* panel
+   * to the header's height and made every link unclickable.
+   *
+   * The panel is now flush with both edges of the viewport (`inset-inline: 0`)
+   * at all times, so it can never extend the document horizontally and needs
+   * no clipping anywhere. The reveal is a short fade plus a small vertical
+   * offset — `opacity` and `transform` only, both compositor-friendly, and
+   * `visibility` keeps the closed panel out of the tab order and off the
+   * accessibility tree rather than leaving invisible links behind.
+   */
+  .mobile-menu {
+    position: absolute;
+    top: 100%;
+    inset-inline: 0;
+    width: 100%;
+    max-width: 100vw;
+    z-index: 40;
+    transition:
+      opacity var(--duration-fast) ease,
+      transform var(--duration-fast) ease,
+      visibility 0s linear;
+  }
+
+  .mobile-menu--closed {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    /* Collapses immediately so the closed panel cannot swallow taps meant for
+       the page beneath it. */
+    transition:
+      opacity var(--duration-fast) ease,
+      transform var(--duration-fast) ease,
+      visibility 0s linear;
+    pointer-events: none;
+  }
+
+  .mobile-menu--open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    /* Only now do we wait for the fade before restoring visibility. */
+    transition:
+      opacity var(--duration-fast) ease,
+      transform var(--duration-fast) ease,
+      visibility 0s linear;
+    pointer-events: auto;
+  }
+
+  .menu-list {
+    width: 100%;
+    padding: 1rem;
+    /*
+     * Fully opaque, with no backdrop-filter.
+     *
+     * Two problems with the previous translucent version:
+     *  - at 0.8/0.85 the headline read straight through the panel and collided
+     *    with the phone number and theme switch — technically open, not cleanly
+     *    readable
+     *  - at 0.97 the remaining 3% still let a bright hero headline ghost through,
+     *    and the result depended on `backdrop-filter` compositing, which is not
+     *    guaranteed on low-end mobile
+     *
+     * A navigation panel is a surface, not a scrim. Opaque colour, a hairline
+     * border and a shadow give the same sense of depth with none of that
+     * fragility, and it costs no compositing work while the menu is open.
+     */
+    background: #ffffff;
+    border-bottom: 1px solid rgb(0 0 0 / 0.08);
+    box-shadow: 0 12px 24px -8px rgb(0 0 0 / 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .dark .menu-list {
+    background: #0f172a;
+    border-bottom-color: rgb(255 255 255 / 0.08);
+    box-shadow: 0 12px 24px -8px rgb(0 0 0 / 0.6);
+  }
+
+  /*
+   * Form autofill.
+   *
+   * Chrome/Safari paint autofilled fields with their own background, which
+   * ignores the site's `background-color` and lands as a bright yellow-white
+   * block in dark mode with near-invisible text. `-webkit-autofill` cannot be
+   * restyled through `background-color` alone, so the fix is the standard
+   * `-webkit-text-fill-color` plus a long-lived `transition` that keeps the
+   * browser from re-applying its own background over the top.
+   *
+   * Scoped to form controls, and it works in light mode too.
+   */
+  input:-webkit-autofill,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: #111827;
+    caret-color: #111827;
+    /* ~11s is longer than Chrome's autofill repaint window, so the field
+       settles on the site background instead of flashing. */
+    transition: background-color 6000s ease-in-out 0s;
+  }
+
+  .dark input:-webkit-autofill,
+  .dark textarea:-webkit-autofill,
+  .dark select:-webkit-autofill {
+    -webkit-text-fill-color: #f1f5f9;
+    caret-color: #f1f5f9;
+  }
+
+  /* Firefox honours the plain properties. */
+  input:-moz-autofill,
+  textarea:-moz-autofill,
+  select:-moz-autofill {
+    background-color: #ffffff;
+    color: #111827;
+  }
+
+  .dark input:-moz-autofill,
+  .dark textarea:-moz-autofill,
+  .dark select:-moz-autofill {
+    background-color: #1e293b;
+    color: #f1f5f9;
+  }
+
+  /* --- Marquee (TextPathAnimation) --- */
+  .marquee-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .marquee-track {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: marquee-scroll 25s linear infinite;
+  }
+
+  .marquee-track--secondary {
+    display: inline-block;
+    animation-duration: 30s;
+  }
+
+  .outlined-text {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(0 0 0 / 0.25);
+  }
+
+  .dark .outlined-text {
+    -webkit-text-stroke: 1px rgb(255 255 255 / 0.4);
+  }
+
+  /* --- Decorative blurred background blobs --- */
+  .bg-blob {
+    @apply pointer-events-none absolute rounded-full blur-3xl;
+  }
+
+  /* Screen-reader-only utility (kept local so the build needs no plugin). */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Utilities                                                           */
+/* ------------------------------------------------------------------ */
+
+@layer utilities {
+  /*
+   * Viewport-height helpers.
+   *
+   * `100vh` on a phone is the *largest* viewport: the height the page would
+   * have with the browser chrome hidden. As the URL bar collapses on scroll the
+   * real viewport gets shorter, so a `100vh` hero is taller than the screen and
+   * a `100vh` footer section pushes content below the fold.
+   *
+   * `svh` is the height with the chrome *shown*, which is what a full-bleed
+   * hero should match. Both declarations are listed so a browser that does not
+   * understand `svh` simply keeps `vh` — the value is declared twice on the
+   * same property, so the later, valid one wins where both are supported.
+   */
+  .min-h-viewport {
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+
+  .h-viewport {
+    height: 100vh;
+    height: 100svh;
+  }
+}

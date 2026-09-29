@@ -1,0 +1,82 @@
+/* ------------------------------------------------------------------ */
+/* Decorative motion                                                   */
+/*                                                                     */
+/* Every one of these is an infinite, purely decorative loop. They all */
+/* run on `transform` only, which the browser can composite without   */
+/* re-rasterising, and all of them are switched off by the            */
+/* `prefers-reduced-motion` block at the bottom of this file.         */
+/*                                                                     */
+/* These used to be framer-motion `animate={{ ... }} repeat: Infinity` */
+/* props. That cost a JavaScript style write per element per frame    */
+/* (eight of them on the services page alone) for an effect CSS can   */
+/* run for free on the compositor.                                     */
+/* ------------------------------------------------------------------ */
+
+/* Service card / about icon bob. Was: <motion.div animate={{ y, rotate }} repeat: Infinity> */
+@keyframes icon-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(2deg);
+  }
+}
+
+.animate-icon-float {
+  animation: icon-float 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Blurred background blobs drifting behind sections.
+   Was: <motion.div animate={{ x, y }} repeat: Infinity> on two elements. */
+@keyframes blob-drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(40px, 20px, 0);
+  }
+}
+
+@keyframes blob-drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-30px, -15px, 0);
+  }
+}
+
+.animate-blob-a {
+  animation: blob-drift-a 10s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-blob-b {
+  animation: blob-drift-b 12s ease-in-out infinite;
+  will-change: transform;
+}
+
+/*
+ * Header wordmark.
+ *
+ * There was a travelling white highlight here, animated with `transform` so it
+ * could be composited. It was removed rather than tuned further, for three
+ * reasons found by looking at the rendered header:
+ *
+ *  - it painted *over* the gradient-clipped glyphs and visibly erased the
+ *    first letters as it swept, at any opacity that was still visible
+ *  - the header is permanently on screen, so it composited frames forever for
+ *    an effect nobody consciously registers
+ *  - the static brand gradient is already the stronger element; the sweep
+ *    competed with it
+ *
+ * The wordmark is defined in `globals.css` and needs no animation.
+ *
+ * The keyframe is kept, commented out of use, so the intent survives for
+ * anyone who wants to reintroduce it deliberately.
+ */
+/* @keyframes brand-shimmer { ... } */

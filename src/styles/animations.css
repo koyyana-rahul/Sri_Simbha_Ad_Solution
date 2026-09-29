@@ -1,0 +1,46 @@
+/**
+ * Global animation keyframes.
+ *
+ * The infinite decorative loops live in `motion.css`; this file holds the shared
+ * ones plus the reduced-motion policy that switches all of them off.
+ */
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/*
+ * Reduced motion: honour the OS-level preference.
+ *
+ * Every infinite marquee / gradient / float animation in the app is switched
+ * off here while the content itself stays visible and readable. framer-motion
+ * is handled separately by `<MotionConfig reducedMotion="user">` in
+ * `app/providers.js`, which neutralises transform animations but still allows
+ * opacity fades — so a reduced-motion visitor gets a short cross-fade rather
+ * than movement, on every page, from one place.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* These need an explicit reset as well: the rule above shortens the
+     duration, but a marquee that jumps to its end state is still a jump. */
+  .marquee-track,
+  .animate-icon-float,
+  .animate-blob-a,
+  .animate-blob-b {
+    animation: none !important;
+    transform: none !important;
+  }
+}

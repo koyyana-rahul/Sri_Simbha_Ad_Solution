@@ -1,0 +1,116 @@
+/**
+ * Design tokens.
+ *
+ * Single place to change brand colours, radii, shadows and z-index scale.
+ * Tailwind reads the same values from `tailwind.config.js`, so the two files
+ * are intentionally kept in sync (see the `theme.extend` block).
+ */
+
+:root {
+  /* Brand */
+  --color-brand-50: #fffbe6;
+  --color-brand-100: #fef9e7;
+  --color-brand-200: #fff1c1;
+  --color-brand-300: #fde68a;
+  --color-brand-400: #fbbf24;
+  --color-brand-500: #f59e0b;
+  --color-brand-600: #d97706;
+  --color-brand-700: #b45309;
+
+  /* Surfaces */
+  --color-surface: #ffffff;
+  --color-surface-muted: #f9fafb;
+  --color-surface-dark: #111827;
+  --color-surface-darker: #030712;
+
+  /* Text */
+  --color-text: #111827;
+  --color-text-muted: #4b5563;
+  --color-text-inverse: #ffffff;
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-card:
+    0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-card-hover: 0 20px 45px -10px rgb(250 204 21 / 0.45);
+  --shadow-nav:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* Layout */
+  --container-max: 72rem;
+  --header-height: 4.5rem;
+  --header-height-mobile: 4rem;
+
+  /* Z-index scale */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-header: 50;
+  --z-modal: 60;
+  --z-floating: 70;
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --duration-slow: 500ms;
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Focus ring — one consistent, always-visible keyboard affordance */
+  --focus-ring-color: var(--color-brand-500);
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Dark theme                                                          */
+/*                                                                      */
+/* Intentionally designed, not an inversion. A flat pure-black page    */
+/* with pure-white text is harsh on OLED and makes elevation           */
+/* indistinguishable, so dark mode uses three surface levels plus        */
+/* explicit border and text steps:                                      */
+/*                                                                      */
+/*   surface        the page behind everything                          */
+/*   surface-1      cards and panels, one step up                       */
+/*   surface-2      inputs and raised controls, one more step           */
+/*   border         hairlines, visible but not loud                     */
+/*                                                                      */
+/* Text is stepped too — `text` for headings and body, `text-muted` for  */
+/* supporting copy, `text-subtle` for meta — because a single grey on   */
+/* near-black either glares or disappears.                              */
+/* ------------------------------------------------------------------ */
+.dark {
+  /* Surfaces */
+  --color-surface: #0b1120;
+  --color-surface-1: #131c31;
+  --color-surface-2: #1e293b;
+  --color-surface-muted: #0f172a;
+
+  /* Text — 15.8:1, 9.6:1 and 6.4:1 against `--color-surface` */
+  --color-text: #f1f5f9;
+  --color-text-muted: #cbd5e1;
+  --color-text-subtle: #94a3b8;
+
+  /* Hairlines */
+  --color-border: #24304a;
+  --color-border-strong: #334155;
+
+  /* The brand brightens in dark mode: #f59e0b is only ~5.7:1 on a near-black
+     surface, while #facc15 is ~12:1 and still unmistakably the same amber. */
+  --color-brand-500: #facc15;
+  --color-brand-400: #fde047;
+  --color-brand-600: #eab308;
+
+  /* Shadows: a black shadow on a near-black surface is invisible, so dark
+     mode separates surfaces with a lighter ring plus a deeper shadow rather
+     than relying on shadow alone. */
+  --shadow-card:
+    0 10px 25px -5px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.04);
+  --shadow-card-hover:
+    0 20px 45px -10px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(250 204 21 / 0.18);
+  --shadow-nav: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+}

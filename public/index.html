@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f59e0b" />
+
+    <!--
+      Apply the stored theme BEFORE the first paint.
+
+      Without this, the `dark` class is only added once React mounts. Measured
+      on a CPU-throttled load, a returning dark-theme visitor got
+      `<html class="">` with `body { background: rgb(255,255,255) }` for the
+      first frames and only afterwards `class="dark"` — a white flash on every
+      load, plus a white flash of native form controls and scrollbars because
+      `color-scheme` was unset.
+
+      This must be inline and in <head>: an external or deferred script always
+      runs after the first paint, which is the flash we are trying to remove.
+
+      There are exactly two themes. Anything that is not "light" or "dark" —
+      including any value written by an older build, such as "system" — is
+      invalid and falls back to dark, which is the site's established default.
+      This mirrors `ThemeProvider` exactly; the two must never disagree.
+    -->
+    <script>
+      (function () {
+        var STORAGE_KEY = "simbha-theme";
+        var DEFAULT_THEME = "dark";
+        var root = document.documentElement;
+        var theme = DEFAULT_THEME;
+
+        try {
+          var stored = window.localStorage.getItem(STORAGE_KEY);
+          if (stored === "light" || stored === "dark") {
+            theme = stored;
+          } else if (stored !== null) {
+            // Normalise anything else ("system", "auto", a value left by an
+            // older build, or hand-edited junk) back to the default while we
+            // already have storage open, so the key can only ever hold a valid
+            // theme from here on.
+            window.localStorage.setItem(STORAGE_KEY, DEFAULT_THEME);
+          }
+        } catch (error) {
+          /* Private mode / storage disabled: use the default. */
+        }
+
+        var isDark = theme === "dark";
+        root.classList.toggle("dark", isDark);
+        root.style.colorScheme = theme;
+
+        // Keep the mobile browser chrome in step with the surface behind it,
+        // rather than staying brand-amber behind a near-black header.
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) {
+          meta.setAttribute("content", isDark ? "#111827" : "#f59e0b");
+        }
+      })();
+    </script>
+
+    <!--
+      Title, description, canonical, Open Graph and Twitter tags are managed at
+      runtime by src/components/common/Seo/Seo.js so every route can have its
+      own metadata. The values below are the defaults used before hydration and
+      by crawlers that do not execute JavaScript.
+    -->
+    <title>
+      Sri Simbha Ad Solution — We Don’t Just Show Ads. We Command Attention.
+    </title>
+    <meta
+      name="description"
+      content="Sri Simbha Ad Solution is a Visakhapatnam based advertising agency offering LED display ads, tea cup printing, digital marketing, website building, ads on wheels and ad film production."
+    />
+    <link rel="canonical" href="https://simbha.vercel.app/" />
+
+    <meta property="og:site_name" content="Sri Simbha Ad Solution" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_IN" />
+    <meta property="og:url" content="https://simbha.vercel.app/" />
+    <meta
+      property="og:title"
+      content="Sri Simbha Ad Solution — We Don’t Just Show Ads. We Command Attention."
+    />
+    <meta
+      property="og:description"
+      content="LED display ads, tea cup printing, digital marketing, website building, ads on wheels and ad film production."
+    />
+    <meta
+      property="og:image"
+      content="https://simbha.vercel.app/apple-touch-icon.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Sri Simbha Ad Solution — We Don’t Just Show Ads. We Command Attention."
+    />
+    <meta
+      name="twitter:description"
+      content="LED display ads, tea cup printing, digital marketing, website building, ads on wheels and ad film production."
+    />
+    <meta
+      name="twitter:image"
+      content="https://simbha.vercel.app/apple-touch-icon.png"
+    />
+
+    <!-- Icons / PWA -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="%PUBLIC_URL%/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="%PUBLIC_URL%/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="%PUBLIC_URL%/favicon-16x16.png"
+    />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" sizes="any" />
+    <link rel="manifest" href="%PUBLIC_URL%/site.webmanifest" />
+
+    <!-- Fonts: preconnect so the Inter request starts before CSS is parsed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+  </head>
+  <body>
+    <noscript>
+      Sri Simbha Ad Solution — LED display ads, tea cup printing, digital
+      marketing, website building, ads on wheels and ad film production. Please
+      enable JavaScript to browse the site, or email
+      simbhaadagency.info@gmail.com to get in touch.
+    </noscript>
+    <div id="root"></div>
+  </body>
+</html>

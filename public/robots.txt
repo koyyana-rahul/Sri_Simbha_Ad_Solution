@@ -1,0 +1,11 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# NOTE: an earlier version of this file had `Disallow: /static/`.
+# Create React App emits every JS and CSS bundle into /static/, so that rule
+# stopped Googlebot from fetching the stylesheet and scripts it needs to render
+# the page at all — the site can only be indexed as an empty <div id="root">.
+# Build output is now left crawlable; there is nothing in it worth hiding.
+
+Sitemap: https://simbha.vercel.app/sitemap.xml
